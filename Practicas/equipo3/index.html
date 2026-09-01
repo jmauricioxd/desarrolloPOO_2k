@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java OOP Playground - Pilares Avanzados</title>
+    <!-- Google Fonts Inter & Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.25);
+            --secondary: #06b6d4;
+            --secondary-glow: rgba(6, 182, 212, 0.25);
+            --bg-dark: #090a0f;
+            --panel-bg: rgba(17, 18, 27, 0.7);
+            --terminal-bg: #050608;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --error: #ef4444;
+            --keyword: #ff79c6;
+            --string: #f1fa8c;
+            --comment: #6272a4;
+            --number: #bd93f9;
+            --type: #8be9fd;
+            --func: #50fa7b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #131424, #08090d);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: linear-gradient(to right, rgba(13, 14, 22, 0.95), rgba(13, 14, 22, 0.65)), url('banner.jpg');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Layout Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            flex-grow: 1;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(10, 11, 16, 0.95);
+            border-right: 1px solid var(--border);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            padding: 0 10px 10px 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        .pillar-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 13.5px;
+            font-weight: 500;
+        }
+
+        .pillar-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .pillar-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.05));
+            border-color: rgba(139, 92, 246, 0.35);
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .pillar-btn .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main Workspace Content */
+        .content-panel {
+            display: grid;
+            grid-template-rows: 1.1fr 0.9fr;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        /* Interactive Area */
+        .interactive-section {
+            background: rgba(14, 15, 24, 0.35);
+            border-bottom: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .panel-description {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Visual Simulator Card */
+        .simulator-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Code & Terminal Panel */
+        .editor-terminal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+            background: var(--bg-dark);
+        }
+
+        /* Code Editor */
+        .code-editor {
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .editor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(10, 11, 16, 0.85);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .editor-filename {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .code-container {
+            flex-grow: 1;
+            overflow: auto;
+            position: relative;
+            background: #0b0c10;
+        }
+
+        .code-display {
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.6;
+            padding: 20px;
+            white-space: pre;
+            color: #f8f8f2;
+            tab-size: 4;
+        }
+
+        /* Code Syntax Coloring */
+        .keyword { color: var(--keyword); font-weight: 500; }
+        .string { color: var(--string); }
+        .comment { color: var(--comment); font-style: italic; }
+        .number { color: var(--number); }
+        .type { color: var(--type); }
+        .func { color: var(--func); }
+        .annotation { color: #ffb86c; }
+        .system-out { color: #8be9fd; }
+
+        /* Terminal */
+        .terminal {
+            display: flex;
+            flex-direction: column;
+            background: var(--terminal-bg);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(7, 8, 12, 0.9);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot.red { background-color: var(--error); }
+        .dot.yellow { background-color: #ffb86c; }
+        .dot.green { background-color: var(--success); }
+
+        .terminal-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .btn-run {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: #fff;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px var(--primary-glow);
+            transition: all 0.2s;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-run:active {
+            transform: translateY(0);
+        }
+
+        .terminal-body {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: #a9b1d6;
+        }
+
+        .terminal-line {
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .terminal-input-line {
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .terminal-success-line {
+            color: var(--success);
+        }
+
+        .terminal-error-line {
+            color: var(--error);
+        }
+
+        /* ------------------ Playground Visuals ------------------ */
+
+        /* General layout inside visualizer */
+        .vis-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vis-controls {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .vis-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            width: 120px;
+            transition: all 0.2s;
+        }
+
+        .vis-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .vis-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .vis-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .vis-canvas {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 160px;
+        }
+
+        /* 1. Herencia Styles */
+        .oop-box {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 160px;
+            position: relative;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .oop-box.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: scale(1.05);
+        }
+
+        .oop-box h4 {
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: var(--secondary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+        }
+
+        .oop-box p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 4px 0;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: var(--primary);
+            margin: 0 15px;
+            animation: pulse-arrow 1.5s infinite;
+        }
+
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(5px); }
+        }
+
+        /* 2. Polimorfismo Styles */
+        .ref-box {
+            background: rgba(30, 41, 59, 0.3);
+            border: 2px dashed var(--secondary);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--secondary);
+            text-align: center;
+            min-width: 180px;
+            transition: all 0.3s;
+        }
+
+        .ref-box.connected {
+            background: rgba(6, 182, 212, 0.15);
+            border-style: solid;
+        }
+
+        .link-line {
+            width: 60px;
+            height: 2px;
+            background: var(--border);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .link-line.active {
+            background: var(--secondary);
+            box-shadow: 0 0 8px var(--secondary-glow);
+        }
+
+        .link-line.active::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            top: -4px;
+            animation: travel 1s linear infinite;
+        }
+
+        @keyframes travel {
+            0% { left: 0%; }
+            100% { left: 100%; }
+        }
+
+        .animal-object {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            min-width: 100px;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s;
+        }
+
+        .animal-object.selected {
+            border-color: var(--success);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .animal-avatar {
+            font-size: 32px;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            top: -45px;
+            background: #fff;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            animation: pop-bubble 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0;
+            border-style: solid;
+            border-color: #fff transparent;
+            display: block;
+            width: 0;
+        }
+
+        @keyframes pop-bubble {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 3. Abstracta Styles */
+        .abstract-container {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .abs-box {
+            border: 2px dashed #94a3b8;
+            background: rgba(148, 163, 184, 0.05);
+            opacity: 0.75;
+        }
+
+        .abs-box.error-flash {
+            animation: flash-red 0.5s 2;
+        }
+
+        @keyframes flash-red {
+            0%, 100% { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+            50% { border-color: #94a3b8; background: transparent; }
+        }
+
+        .figura-demo-display {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.5s;
+        }
+
+        /* 4. Interface Styles */
+        .plug-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .tv-bezel {
+            width: 160px;
+            height: 100px;
+            background: #27272a;
+            border: 4px solid #18181b;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .tv-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            transition: all 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: #3f3f46;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .tv-screen.on {
+            background: linear-gradient(135deg, #0284c7, #7c3aed);
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255,255,255,0.6);
+            animation: flicker 0.15s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.98; }
+            100% { opacity: 1; }
+        }
+
+        .tv-screen::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .static-badge {
+            background: var(--primary);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span class="logo-icon">☕</span>
+            <div class="logo-text">
+                <h1>Java OOP Playground</h1>
+                <span>Pilares Avanzados de la Programación Orientada a Objetos</span>
+            </div>
+        </div>
+        <div>
+            <span style="font-size: 12px; color: var(--text-muted);">Proyecto Educativo</span>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-title">Pilares de POO</div>
+            <button class="pillar-btn" id="btn-nav-herencia" onclick="selectPillar('herencia')">
+                <span class="icon">🧬</span>
+                <span>1. Herencia</span>
+            </button>
+            <button class="pillar-btn" id="btn-nav-polimorfismo" onclick="selectPillar('polimorfismo')">
+                <span class="icon">🎭</span>
+                <span>2. Polimorfismo</span>
+            </button>
+            <button class="pillar-btn" id="btn-nav-abstracta" onclick="selectPillar('abstracta')">
+                <span class="icon">📐</span>
+                <span>3. Clases Abstractas</span>
+            </button>
+            <button class="pillar-btn" id="btn-nav-interfaces" onclick="selectPillar('interfaces')">
+                <span class="icon">🔌</span>
+                <span>4. Interfaces</span>
+            </button>
+
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-panel">
+            <!-- Interactive Simulator Area -->
+            <div class="interactive-section">
+                <div class="panel-header">
+                    <h2 class="panel-title" id="p-title">1. Herencia</h2>
+                    <span id="p-badge" class="static-badge" style="background:#8b5cf6; padding:4px 8px; font-size:11px;">extends & super</span>
+                </div>
+                <p class="panel-description" id="p-description">
+                    La herencia permite crear una nueva clase (subclase) a partir de una existente (superclase), heredando sus atributos y métodos.
+                </p>
+
+                <!-- Visual Card -->
+                <div class="simulator-card" id="simulator-view">
+                    <!-- Dynamic view loaded via JS -->
+                </div>
+            </div>
+
+            <!-- Lower half: Editor & Terminal -->
+            <div class="editor-terminal-grid">
+                <!-- Code Editor View -->
+                <div class="code-editor">
+                    <div class="editor-header">
+                        <span class="editor-filename" id="file-name">HerenciaDemo.java</span>
+                        <span style="font-size: 11px; color: var(--text-muted);">Solo Lectura</span>
+                    </div>
+                    <div class="code-container">
+                        <pre class="code-display" id="code-view">Loading...</pre>
+                    </div>
+                </div>
+
+                <!-- Simulated Terminal -->
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-controls">
+                            <div class="dot red"></div>
+                            <div class="dot yellow"></div>
+                            <div class="dot green"></div>
+                        </div>
+                        <span class="terminal-title">Consola del Sistema</span>
+                        <button class="btn-run" onclick="runSimulatedCode()">
+                            <span>▶</span> Ejecutar en Terminal
+                        </button>
+                    </div>
+                    <div class="terminal-body" id="terminal-view">
+                        <div class="terminal-line terminal-input-line">$ # Selecciona un pilar y haz clic en "Ejecutar"</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Section -->
+    <script>
+        // Repository of Java code samples
+        const javaCodes = {
+            herencia: `// 1. HERENCIA
+// Superclase (Clase Padre)
+class Persona {
+    String nombre;
+
+    Persona(String nombre) {
+        this.nombre = nombre;
+    }
+
+    void presentarse() {
+        System.out.println("Hola, mi nombre es: " + nombre);
+    }
+}
+
+// Subclase (Clase Hija)
+class Estudiante extends Persona {
+    String carrera;
+
+    Estudiante(String nombre, String carrera) {
+        super(nombre); // Llama al constructor de la superclase
+        this.carrera = carrera;
+    }
+
+    void mostrarInfo() {
+        super.presentarse(); // Llama a presentarse() de Persona
+        System.out.println("Estudio la carrera de: " + carrera);
+    }
+}
+
+public class HerenciaDemo {
+    public static void main(String[] args) {
+        System.out.println("=== 1. Pilar: Herencia ===");
+        Estudiante est = new Estudiante("{nombre}", "{carrera}");
+        est.mostrarInfo();
+    }
+}`,
+            polimorfismo: `// 2. POLIMORFISMO Y SOBRESCRITURA
+class Animal {
+    void hacerSonido() {
+        System.out.println("El animal hace un sonido genérico.");
+    }
+}
+
+class Perro extends Animal {
+    @Override
+    void hacerSonido() {
+        System.out.println("El perro ladra: ¡Guau guau!");
+    }
+}
+
+class Gato extends Animal {
+    @Override
+    void hacerSonido() {
+        System.out.println("El gato maúlla: ¡Miau miau!");
+    }
+}
+
+public class PolimorfismoDemo {
+    public static void main(String[] args) {
+        System.out.println("=== 2. Pilar: Polimorfismo y Sobrescritura ===");
+        
+        // Polimorfismo: el objeto real ({tipo}) responde al mismo método
+        Animal miAnimal = new {tipo}();
+        miAnimal.hacerSonido();
+    }
+}`,
+            abstracta: `// 3. CLASES Y MÉTODOS ABSTRACTOS
+// Clase abstracta: plantilla que no se puede instanciar directamente
+abstract class Personaje {
+    String nombre;
+    Personaje(String nombre) {
+        this.nombre = nombre;
+    }
+
+    // Método abstracto obligatorio en clases concretas
+    abstract void atacar();
+
+    // Método concreto heredado directamente por todos
+    void curar() {
+        System.out.println(nombre + " usa una poción y recupera vida.");
+    }
+}
+
+// Subclase Guerrero
+class Guerrero extends Personaje {
+    Guerrero(String nombre) {
+        super(nombre);
+    }
+    @Override
+    void atacar() {
+        System.out.println(nombre + " ataca blandiendo su espada de acero: ¡Zas!");
+    }
+}
+
+// Subclase Mago
+class Mago extends Personaje {
+    Mago(String nombre) {
+        super(nombre);
+    }
+    @Override
+    void atacar() {
+        System.out.println(nombre + " lanza una bola de fuego mágico: ¡Fuego!");
+    }
+}
+
+public class AbstractaDemo {
+    public static void main(String[] args) {
+        System.out.println("=== 3. Pilar: Clases y Métodos Abstractos ===");
+        // Personaje p = new Personaje("Héroe Genérico"); // ERROR: es abstracta
+        
+        Personaje miPersonaje = new {subtipo}("{nombre}");
+        miPersonaje.atacar();
+        miPersonaje.curar();
+    }
+}`,
+            interfaces: `// 4. INTERFACES
+interface Conectable {
+    void encender();
+    void apagar();
+}
+
+class Televisor implements Conectable {
+    @Override
+    public void encender() {
+        System.out.println("Televisor encendido: Cargando señal hdmi...");
+    }
+
+    @Override
+    public void apagar() {
+        System.out.println("Televisor apagado: Guardando configuración.");
+    }
+}
+
+public class InterfaceDemo {
+    public static void main(String[] args) {
+        System.out.println("=== 4. Pilar: Interfaces ===");
+        Conectable tv = new Televisor();
+        if ({encender}) {
+            tv.encender();
+        } else {
+            tv.apagar();
+        }
+    }
+}`
+        };
+
+        // State managers
+        let activePillar = 'herencia';
+        let isTvOn = false; // for interface
+        let polimorfismoTarget = 'Perro'; // default for polymorphism
+
+        // Interactive states values
+        let herenciaName = "Anderson";
+        let herenciaCareer = "Software Engineering";
+        let abstractNombre = "Ragnar";
+        let abstractSubtipo = "Guerrero";
+
+        function highlightJava(code) {
+            let html = code
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            // Key words
+            const keywords = /\b(class|extends|implements|interface|abstract|void|public|static|final|new|double|int|String|super|this|return)\b/g;
+            html = html.replace(keywords, '<span class="keyword">$1</span>');
+
+            // Annotations
+            html = html.replace(/(@\w+)/g, '<span class="annotation">$1</span>');
+
+            // Strings
+            html = html.replace(/(".*?")/g, '<span class="string">$1</span>');
+
+            // Comments
+            html = html.replace(/(\/\/.*)/g, '<span class="comment">$1</span>');
+
+            // Numbers
+            html = html.replace(/\b(\d+(\.\d+)?)\b/g, '<span class="number">$1</span>');
+
+            // System.out.println
+            html = html.replace(/(System\.out\.println)/g, '<span class="system-out">$1</span>');
+
+            return html;
+        }
+
+        function updateCodeDisplay() {
+            let baseCode = javaCodes[activePillar];
+            // Replace template variables to match GUI input in code screen too
+            if (activePillar === 'herencia') {
+                baseCode = baseCode.replace('{nombre}', herenciaName).replace('{carrera}', herenciaCareer);
+            } else if (activePillar === 'polimorfismo') {
+                baseCode = baseCode.replace('{tipo}', polimorfismoTarget);
+            } else if (activePillar === 'abstracta') {
+                baseCode = baseCode.replace('{nombre}', abstractNombre).replace('{subtipo}', abstractSubtipo);
+            } else if (activePillar === 'interfaces') {
+                baseCode = baseCode.replace('{encender}', isTvOn ? 'true' : 'false');
+            }
+            document.getElementById('code-view').innerHTML = highlightJava(baseCode);
+        }
+
+        // Change between pillars
+        function selectPillar(pillar) {
+            activePillar = pillar;
+            
+            // UI Active sidebar
+            document.querySelectorAll('.sidebar .pillar-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`btn-nav-${pillar}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Update files & headers
+            const files = {
+                herencia: 'HerenciaDemo.java',
+                polimorfismo: 'PolimorfismoDemo.java',
+                abstracta: 'AbstractaDemo.java',
+                interfaces: 'InterfaceDemo.java'
+            };
+            document.getElementById('file-name').textContent = files[pillar];
+
+            // Metadata info
+            const titles = {
+                herencia: '1. Herencia',
+                polimorfismo: '2. Polimorfismo y Sobrescritura',
+                abstracta: '3. Clases y Métodos Abstractos',
+                interfaces: '4. Interfaces'
+            };
+            const badges = {
+                herencia: 'extends & super',
+                polimorfismo: '@Override & Polimorfismo',
+                abstracta: 'abstract class & method',
+                interfaces: 'interface & implements'
+            };
+            const desc = {
+                herencia: 'Muestra la creación de una jerarquía de clases donde la clase hija hereda propiedades y métodos de la clase padre.',
+                polimorfismo: 'Demuestra cómo una sola variable de tipo padre puede hacer referencia a objetos de diferentes clases hijas y resolver el método sobrescrito correspondiente en tiempo de ejecución.',
+                abstracta: 'Utiliza una clase abstracta como molde o plantilla que define la firma de un método, forzando a sus subclases a darle cuerpo.',
+                interfaces: 'Crea un acuerdo/contrato de comportamiento para clases sin relación de herencia directa. Declara métodos sin cuerpo que la clase debe implementar.'
+            };
+
+            document.getElementById('p-title').textContent = titles[pillar];
+            document.getElementById('p-badge').textContent = badges[pillar];
+            document.getElementById('p-description').textContent = desc[pillar];
+
+            // Load Visual Simulator
+            loadSimulator(pillar);
+            updateCodeDisplay();
+
+            // Clear terminal
+            document.getElementById('terminal-view').innerHTML = `<div class="terminal-line terminal-input-line">$ # Selecciona un pilar y haz clic en "Ejecutar" para ver la salida en consola.</div>`;
+        }
+
+        // Load specific simulator view inside simulator-card
+        function loadSimulator(pillar) {
+            const container = document.getElementById('simulator-view');
+            container.innerHTML = '';
+
+            const vis = document.createElement('div');
+            vis.className = 'vis-container';
+
+            if (pillar === 'herencia') {
+                vis.innerHTML = `
+                    <div class="vis-controls">
+                        <label style="font-size:12px;">Nombre:</label>
+                        <input type="text" class="vis-input" id="h-name-in" value="${herenciaName}">
+                        <label style="font-size:12px; margin-left:10px;">Carrera:</label>
+                        <input type="text" class="vis-input" id="h-career-in" value="${herenciaCareer}">
+                        <button class="vis-btn" onclick="animateHerencia()">Instanciar Estudiante</button>
+                    </div>
+                    <div class="vis-canvas" style="gap: 10px;">
+                        <div class="oop-box" id="box-persona">
+                            <h4>Superclase: Persona</h4>
+                            <p>nombre: <span style="color:#fff;" id="lbl-persona-name">?</span></p>
+                            <p style="font-size:10px; color:var(--success);">void presentarse()</p>
+                        </div>
+                        <div class="arrow">➔</div>
+                        <div class="oop-box" id="box-estudiante">
+                            <h4>Subclase: Estudiante</h4>
+                            <p>carrera: <span style="color:#fff;" id="lbl-est-carrera">?</span></p>
+                            <p style="font-size:10px; color:var(--success);">void mostrarInfo()</p>
+                        </div>
+                    </div>
+                `;
+            } else if (pillar === 'polimorfismo') {
+                vis.innerHTML = `
+                    <div class="vis-controls">
+                        <label style="font-size:12px;">Instanciar clase:</label>
+                        <button class="vis-btn ${polimorfismoTarget==='Perro'?'active':''}" onclick="setPolimorfismoTarget('Perro')">new Perro()</button>
+                        <button class="vis-btn ${polimorfismoTarget==='Gato'?'active':''}" onclick="setPolimorfismoTarget('Gato')">new Gato()</button>
+                        <button class="vis-btn" style="background:var(--secondary);" onclick="animatePolimorfismo()">Llamar hacerSonido()</button>
+                    </div>
+                    <div class="vis-canvas" style="gap: 15px;">
+                        <div class="ref-box" id="ref-var">
+                            Animal miAnimal;
+                            <div style="font-size:10px; color:var(--text-muted);">Referencia (Padre)</div>
+                        </div>
+                        <div class="link-line" id="vis-link"></div>
+                        <div class="animal-object" id="obj-perro">
+                            <span class="animal-avatar">🐶</span>
+                            <div style="font-size:11px; font-weight:700;">Perro</div>
+                            <div style="font-size:9px; color:var(--comment);">@Override</div>
+                        </div>
+                        <div class="animal-object" id="obj-gato">
+                            <span class="animal-avatar">🐱</span>
+                            <div style="font-size:11px; font-weight:700;">Gato</div>
+                            <div style="font-size:9px; color:var(--comment);">@Override</div>
+                        </div>
+                    </div>
+                `;
+                setTimeout(updatePolimorfismoUI, 10);
+            } else if (pillar === 'abstracta') {
+                vis.innerHTML = `
+                    <div class="vis-controls">
+                        <label style="font-size:12px;">Nombre:</label>
+                        <input type="text" class="vis-input" id="abs-name-in" value="${abstractNombre}" style="width:100px;">
+                        <label style="font-size:12px; margin-left:10px;">Subclase:</label>
+                        <button class="vis-btn ${abstractSubtipo==='Guerrero'?'active':''}" id="btn-sub-g" onclick="setAbstractSubtipo('Guerrero')">Guerrero</button>
+                        <button class="vis-btn ${abstractSubtipo==='Mago'?'active':''}" id="btn-sub-m" onclick="setAbstractSubtipo('Mago')">Mago</button>
+                        <button class="vis-btn" style="border-color:var(--error);" onclick="tryAbstractInstantiation()">new Personaje()</button>
+                        <button class="vis-btn" id="btn-instantiate-abstract" onclick="animateAbstract()">new ${abstractSubtipo}()</button>
+                    </div>
+                    <div class="vis-canvas" style="gap: 30px;">
+                        <div class="oop-box abs-box" id="box-figura">
+                            <h4>abstract Personaje</h4>
+                            <p style="color:var(--error); font-size:10px; font-weight:bold;">¡No se puede instanciar!</p>
+                            <p style="font-size:10px;">abstract atacar()</p>
+                        </div>
+                        <div class="arrow">➔</div>
+                        <div class="oop-box" id="personaje-display" style="border-style: solid; min-width: 180px;">
+                            <h4 id="lbl-abs-title">${abstractSubtipo}</h4>
+                            <p>nombre: <span style="color:#fff;" id="lbl-abs-name">${abstractNombre}</span></p>
+                            <p style="font-size:11px; color:var(--secondary); margin-top:5px; font-weight:bold;" id="lbl-abs-action">Acción: Ninguna</p>
+                        </div>
+                    </div>
+                `;
+            } else if (pillar === 'interfaces') {
+                vis.innerHTML = `
+                    <div class="vis-controls">
+                        <label style="font-size:12px; font-weight:bold; color:var(--secondary);">interface Conectable</label>
+                        <span style="font-size:12px; color:var(--text-muted);">impl por Televisor</span>
+                        <button class="vis-btn" onclick="toggleTv(true)" style="background:var(--success);">encender()</button>
+                        <button class="vis-btn" onclick="toggleTv(false)" style="background:var(--error);">apagar()</button>
+                    </div>
+                    <div class="vis-canvas">
+                        <div class="plug-container">
+                            <div class="tv-bezel">
+                                <div class="tv-screen ${isTvOn ? 'on' : ''}" id="tv-screen-el">
+                                    ${isTvOn ? '📺 HDMI-1<br>Televisor Encendido' : 'TV APAGADA'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.appendChild(vis);
+        }
+
+        /* Animations for each pilar */
+
+        // 1. Herencia
+        function animateHerencia() {
+            herenciaName = document.getElementById('h-name-in').value || "Anderson";
+            herenciaCareer = document.getElementById('h-career-in').value || "Software Engineering";
+            updateCodeDisplay();
+
+            const pBox = document.getElementById('box-persona');
+            const eBox = document.getElementById('box-estudiante');
+            
+            pBox.classList.add('active');
+            document.getElementById('lbl-persona-name').textContent = "Cargando...";
+
+            setTimeout(() => {
+                document.getElementById('lbl-persona-name').textContent = herenciaName;
+                pBox.classList.remove('active');
+                eBox.classList.add('active');
+                
+                setTimeout(() => {
+                    document.getElementById('lbl-est-carrera').textContent = herenciaCareer;
+                    eBox.classList.remove('active');
+                }, 800);
+            }, 800);
+        }
+
+        // 2. Polimorfismo
+        function setPolimorfismoTarget(target) {
+            polimorfismoTarget = target;
+            updatePolimorfismoUI();
+            updateCodeDisplay();
+        }
+
+        function updatePolimorfismoUI() {
+            const pBtn = document.querySelectorAll('.vis-controls button')[0];
+            const gBtn = document.querySelectorAll('.vis-controls button')[1];
+            
+            pBtn.classList.remove('active');
+            gBtn.classList.remove('active');
+
+            if (polimorfismoTarget === 'Perro') {
+                pBtn.classList.add('active');
+                document.getElementById('obj-perro').classList.add('selected');
+                document.getElementById('obj-gato').classList.remove('selected');
+                document.getElementById('ref-var').classList.add('connected');
+                document.getElementById('ref-var').innerHTML = `Animal miAnimal = <span style="color:var(--success);">new Perro()</span>;`;
+            } else {
+                gBtn.classList.add('active');
+                document.getElementById('obj-perro').classList.remove('selected');
+                document.getElementById('obj-gato').classList.add('selected');
+                document.getElementById('ref-var').classList.add('connected');
+                document.getElementById('ref-var').innerHTML = `Animal miAnimal = <span style="color:var(--success);">new Gato()</span>;`;
+            }
+        }
+
+        function animatePolimorfismo() {
+            const link = document.getElementById('vis-link');
+            link.classList.add('active');
+
+            setTimeout(() => {
+                link.classList.remove('active');
+                const targetObj = document.getElementById(polimorfismoTarget === 'Perro' ? 'obj-perro' : 'obj-gato');
+                
+                // Speech bubble
+                const bubble = document.createElement('div');
+                bubble.className = 'speech-bubble';
+                bubble.innerText = polimorfismoTarget === 'Perro' ? '¡Guau guau!' : '¡Miau miau!';
+                targetObj.appendChild(bubble);
+
+                setTimeout(() => {
+                    bubble.remove();
+                }, 1500);
+            }, 1000);
+        }
+
+        // 3. Abstracta
+        function setAbstractSubtipo(subtipo) {
+            abstractSubtipo = subtipo;
+            abstractNombre = document.getElementById('abs-name-in').value || "Ragnar";
+            updateCodeDisplay();
+            
+            // Toggle active classes on buttons
+            const btnG = document.getElementById('btn-sub-g');
+            const btnM = document.getElementById('btn-sub-m');
+            if (btnG && btnM) {
+                if (subtipo === 'Guerrero') {
+                    btnG.classList.add('active');
+                    btnM.classList.remove('active');
+                } else {
+                    btnG.classList.remove('active');
+                    btnM.classList.add('active');
+                }
+            }
+            
+            const titleEl = document.getElementById('lbl-abs-title');
+            if (titleEl) titleEl.textContent = subtipo;
+
+            const instBtn = document.getElementById('btn-instantiate-abstract');
+            if (instBtn) instBtn.textContent = `new ${subtipo}()`;
+        }
+
+        function tryAbstractInstantiation() {
+            const box = document.getElementById('box-figura');
+            box.classList.add('error-flash');
+            
+            // Console print error
+            const tv = document.getElementById('terminal-view');
+            tv.innerHTML = `
+                <div class="terminal-line terminal-input-line">$ javac AbstractaDemo.java</div>
+                <div class="terminal-line terminal-error-line">AbstractaDemo.java:45: error: Personaje is abstract; cannot be instantiated</div>
+                <div class="terminal-line terminal-error-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Personaje p = new Personaje("Héroe Genérico");</div>
+                <div class="terminal-line terminal-error-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^</div>
+                <div class="terminal-line terminal-error-line">1 error</div>
+            `;
+            setTimeout(() => box.classList.remove('error-flash'), 1000);
+        }
+
+        function animateAbstract() {
+            abstractNombre = document.getElementById('abs-name-in').value || "Ragnar";
+            updateCodeDisplay();
+
+            const actionEl = document.getElementById('lbl-abs-action');
+            const displayEl = document.getElementById('personaje-display');
+            const nameEl = document.getElementById('lbl-abs-name');
+            
+            if (nameEl) nameEl.textContent = abstractNombre;
+            
+            if (displayEl) {
+                displayEl.classList.add('active');
+                setTimeout(() => displayEl.classList.remove('active'), 500);
+            }
+
+            if (actionEl) {
+                if (abstractSubtipo === 'Guerrero') {
+                    actionEl.textContent = "⚔️ ¡Zas! (Ataque con Espada)";
+                    actionEl.style.color = "var(--secondary)";
+                } else {
+                    actionEl.textContent = "🔥 ¡Fuego! (Bola de Fuego)";
+                    actionEl.style.color = "var(--keyword)";
+                }
+            }
+        }
+
+        // 4. Interfaces
+        function toggleTv(state) {
+            isTvOn = state;
+            updateCodeDisplay();
+            const screen = document.getElementById('tv-screen-el');
+            if (state) {
+                screen.classList.add('on');
+                screen.innerHTML = '📺 HDMI-1<br>Televisor Encendido';
+            } else {
+                screen.classList.remove('on');
+                screen.innerHTML = 'TV APAGADA';
+            }
+        }
+
+
+
+        /* Running simulated code */
+        function runSimulatedCode() {
+            const tv = document.getElementById('terminal-view');
+            tv.innerHTML = '';
+            
+            // Compilation
+            const files = {
+                herencia: 'HerenciaDemo',
+                polimorfismo: 'PolimorfismoDemo',
+                abstracta: 'AbstractaDemo',
+                interfaces: 'InterfaceDemo'
+            };
+            const currentFile = files[activePillar];
+
+            tv.innerHTML += `<div class="terminal-line terminal-input-line">$ javac ${currentFile}.java</div>`;
+            
+            setTimeout(() => {
+                tv.innerHTML += `<div class="terminal-line terminal-input-line">$ java ${currentFile}</div>`;
+                
+                setTimeout(() => {
+                    // Specific outputs based on dynamic variables
+                    if (activePillar === 'herencia') {
+                        tv.innerHTML += `
+                            <div class="terminal-line">=== 1. Pilar: Herencia ===</div>
+                            <div class="terminal-line">Hola, mi nombre es: ${herenciaName}</div>
+                            <div class="terminal-line">Estudio la carrera de: ${herenciaCareer}</div>
+                        `;
+                    } else if (activePillar === 'polimorfismo') {
+                        const sound = polimorfismoTarget === 'Perro' ? 'El perro ladra: ¡Guau guau!' : 'El gato maúlla: ¡Miau miau!';
+                        tv.innerHTML += `
+                            <div class="terminal-line">=== 2. Pilar: Polimorfismo y Sobrescritura ===</div>
+                            <div class="terminal-line">${sound}</div>
+                        `;
+                    } else if (activePillar === 'abstracta') {
+                        const attackText = abstractSubtipo === 'Guerrero' 
+                            ? `${abstractNombre} ataca blandiendo su espada de acero: ¡Zas!` 
+                            : `${abstractNombre} lanza una bola de fuego mágico: ¡Fuego!`;
+                        tv.innerHTML += `
+                            <div class="terminal-line">=== 3. Pilar: Clases y Métodos Abstractos ===</div>
+                            <div class="terminal-line">${attackText}</div>
+                            <div class="terminal-line">${abstractNombre} usa una poción y recupera vida.</div>
+                        `;
+                    } else if (activePillar === 'interfaces') {
+                        const stateMsg = isTvOn 
+                            ? 'Televisor encendido: Cargando señal hdmi...' 
+                            : 'Televisor apagado: Guardando configuración.';
+                        tv.innerHTML += `
+                            <div class="terminal-line">=== 4. Pilar: Interfaces ===</div>
+                            <div class="terminal-line">${stateMsg}</div>
+                        `;
+                    }
+                    tv.innerHTML += `<div class="terminal-line terminal-success-line">[Proceso terminado con código de salida 0]</div>`;
+                    
+                    // Scroll to bottom
+                    tv.scrollTop = tv.scrollHeight;
+                }, 600);
+            }, 600);
+        }
+
+        // Initialize default view
+        selectPillar('herencia');
+    </script>
+</body>
+</html>
